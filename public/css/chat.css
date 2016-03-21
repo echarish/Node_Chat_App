@@ -1,0 +1,18 @@
+.panel-height {
+  height: 400px;
+  min-height: 10;
+  max-height: 10;
+  overflow-y: scroll;
+}
+
+
+.thumbnail {
+    position: relative;
+}
+
+.caption {
+    position: absolute;
+    top: 65%;
+    left: 0;
+    width: 100%;
+}

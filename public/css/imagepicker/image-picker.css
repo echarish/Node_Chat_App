@@ -1,0 +1,17 @@
+.avatarul {
+  width:250px;
+  margin-bottom:20px;
+  overflow:hidden;
+
+}
+.avatarli{
+  line-height:1.5em;
+  float:left;
+  display:inline;
+}
+#double .avatarli  { width:50%;}
+#triple .avatarli  { width:33.333%; }
+#quad .avatarli    { width:25%; }
+.avatarListUL .avatarli     { width:16.666%; }
+
+
