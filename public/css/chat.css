@@ -16,3 +16,22 @@
     left: 0;
     width: 100%;
 }
+
+.nav-tabs{
+  background-color:#d9edf7;
+}
+.tab-content{
+    background-color:#428bca;
+    color:#fff;
+    padding:5px
+}
+.nav-tabs > li > a{
+  border: medium none;
+   background-color: #d9edf7;
+}
+.nav-tabs > li > a:hover{
+  background-color: #428bca !important;
+    border: medium none;
+    border-radius: 0;
+    color:#fff;
+}

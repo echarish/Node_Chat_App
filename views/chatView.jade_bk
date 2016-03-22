@@ -1,0 +1,25 @@
+.col-md-6
+          ul#chatTabUL.nav.nav-tabs.nav-justified
+            li.active
+              a(data-toggle='tab', href='#pubChatHome') Public
+            li
+              a(data-toggle='tab', href='#menu1') Menu 1
+            li
+              a(data-toggle='tab', href='#menu2') Menu 2
+          .tab-content.nav-justified
+            #pubChatHome.tab-pane.fade.in.active
+              .panel.panel-info
+                .panel-heading Public Talk History
+                #publicChatHistoryDiv.panel-body.panel-height
+                  ul#chatHistoryAllList.media-list
+                .panel-footer
+                  .input-group
+                    input#message-box.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
+                    span.input-group-btn
+                      button#send-message-btn.btn.btn-info(type='button') Send Message
+            #menu1.tab-pane.fade
+              h3 Menu 1
+              p Some content in menu 1.
+            #menu2.tab-pane.fade
+              h3 Menu 2
+              p Some content in menu 2.
