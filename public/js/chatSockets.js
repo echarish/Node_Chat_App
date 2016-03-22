@@ -81,3 +81,8 @@ socket.on('avatarList',function(avatarList){
     }
     $("#avatarListUL").append(getAvatarList());
 })
+
+socket.on('avatarChange', function(msg) {
+	   //alert(msg);
+	    $("#"+msg.userName+"avatarImage").attr("src", msg.avatarLocation);
+});

@@ -135,6 +135,14 @@ io.on('connection', function(socket) {
 
 		socket.broadcast.emit('globalChat', msg);
 	});
+
+
+	socket.on('avatarChange', function(msg) {
+	    socket.broadcast.emit('avatarChange', msg);
+	});
+
+
+
 });
 
 function userJoined(userDetails) {

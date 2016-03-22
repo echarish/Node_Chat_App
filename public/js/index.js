@@ -122,7 +122,7 @@ function appendOnlineUserInfo(userName, logTime, userAvatarId) {
     var onlineUserBuilder = '<li class="media" id="'+userName+'">'+
 
         '<a  href="">' +
-        '<img class="media-object img-circle pull-left" style="max-height:40px;" src="images/avatar/' +
+        '<img class="media-object img-circle pull-left" style="max-height:40px;" id="'+userName+'avatarImage" src="images/avatar/' +
         userAvatarId +
         '" />' +
         '<img class="media-object img-circle pull-left" style="max-height:40px;" src="images/status/status-online.png" />'+
@@ -214,6 +214,11 @@ function changeAvatar(avatarName) {
     //alert(avatarLocation);
     $("#myAvatarAtNameChooser").attr("src", avatarLocation);
     $("#myAvatarImage").attr("src", avatarLocation);
+    if(userName!='undefined' && userName!=""){
+        $("#"+userName+"avatarImage").attr("src", avatarLocation);
+        socket.emit('avatarChange', {"userName":userName,"avatarLocation":avatarLocation});
+    }
+
 
 }
 
