@@ -9,7 +9,7 @@ socket.on('globalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
     $('#chatHistoryAllList').append(getStructuredMessage(msg));
     playSound("bing");
-    scrollMessageToEnd();
+    scrollMessageToEnd($('#chatHistoryAllList'));
     $.titleAlert(msg.message, {
         requireBlur : true,
         stopOnFocus : true,
@@ -22,7 +22,7 @@ socket.on('globalChat', function(msg) {
 socket.on('savedGlobalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
     $('#chatHistoryAllList').append(getStructuredMessage(msg));
-    scrollMessageToEnd();
+    scrollMessageToEnd($('#chatHistoryAllList'));
 });
 
 socket.on('userJoined', function(userDetails) {

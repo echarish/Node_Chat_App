@@ -26,12 +26,13 @@
     padding:5px
 }
 .nav-tabs > li > a{
-  border: medium none;
+   border: medium none;
    background-color: #d9edf7;
 }
-.nav-tabs > li > a:hover{
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus{
   background-color: #428bca !important;
     border: medium none;
     border-radius: 0;
     color:#fff;
 }
+

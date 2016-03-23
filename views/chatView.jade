@@ -1,7 +1,7 @@
 .col-md-6
           ul#chatTabUL.nav.nav-tabs
-            li.active
-              a(data-toggle='tab', href='#pubChatHome') Public
+            li#globalChatUlLi.active
+              a#globalAnchor(data-toggle='tab',aria-expanded="true", href='#pubChatHome') Public
 
           #chatTabContentDiv.tab-content.nav-justified
             #pubChatHome.tab-pane.fade.in.active
@@ -10,6 +10,6 @@
                   ul#chatHistoryAllList.media-list
                 .panel-footer
                   .input-group
-                    input#message-box.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
+                    input#publicMessageBox.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
                     span.input-group-btn
-                      button#send-message-btn.btn.btn-info(type='button') Send Message
+                      button#publicMessageSendBtn.btn.btn-info(type='button') Send Message
