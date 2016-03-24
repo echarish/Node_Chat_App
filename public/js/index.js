@@ -7,16 +7,16 @@ var myChatterArray = [];
 // onLoadFunctions
 
 $(function() {
-	//alert('ready function '+userName);
+	// alert('ready function '+userName);
 	// $('#chooseUserNameContainer').hide();
-	if(userName==undefined || userName==''){
-	    //alert('inside if');
-	    $('#chatDisplayRowContainer').hide();
-        $('#chooseUserNameContainer').show();
-	}else{
-	    //alert('inside else');
-	    $('#chatDisplayRowContainer').show();
-        $('#chooseUserNameContainer').hide();
+	if (userName == undefined || userName == '') {
+		// alert('inside if');
+		$('#chatDisplayRowContainer').hide();
+		$('#chooseUserNameContainer').show();
+	} else {
+		// alert('inside else');
+		$('#chatDisplayRowContainer').show();
+		$('#chooseUserNameContainer').hide();
 	}
 
 	$('#chooseAvatarAnchor').popover({
@@ -26,7 +26,7 @@ $(function() {
 		animation : true,
 		html : true,
 		content : function() {
-            //alert($('#popover_content_wrapper').html());
+			// alert($('#popover_content_wrapper').html());
 			return $('#popover_content_wrapper').html();
 		}
 	});
@@ -38,37 +38,34 @@ $(function() {
 		animation : true,
 		html : true,
 		content : function() {
-            //alert($('#popover_content_wrapper').html());
+			// alert($('#popover_content_wrapper').html());
 			return $('#popover_content_wrapper').html();
 		}
 	});
 
-	var globalChatterObject = {
-		"chatTo" : "global",
-		"chatTabUlLiId" : "globalChatUlLi",
-		"chatTabContentDivId" : "pubChatHome",
-		"chatHistoryAllList" : "chatHistoryAllList",
-		"messageBox" : "publicMessageBox",
-		"sendMessageBtn" : "publicMessageSendBtn",
-		"tabAnchor" : "globalAnchor"
-	};
-	myChatterArray.push(globalChatterObject);
+	myChatterArray.push(getChatterObject("global", "globalChatUlLi",
+			"publicChatHome", "chatHistoryAllList", "publicMessageBox",
+			"publicMessageSendBtn", "globalAnchor", "publicChatHistoryDiv"));
 });
 
 // UI Functions
-$('#publicMessageSendBtn').click(function() {
-	sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',true);
-	return false;
-});
+$('#publicMessageSendBtn').click(
+		function() {
+			sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',
+					true, 'publicChatHistoryDiv');
+			return false;
+		});
 
-$('#publicMessageBox').keypress(function(e) {
-	if (e.keyCode == 13) {
-		sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',true);
-		e.stopPropagation();
-		e.stopped = true;
-		e.preventDefault();
-	}
-});
+$('#publicMessageBox').keypress(
+		function(e) {
+			if (e.keyCode == 13) {
+				sendChatMessage('global', 'publicMessageBox',
+						'chatHistoryAllList', true, 'publicChatHistoryDiv');
+				e.stopPropagation();
+				e.stopped = true;
+				e.preventDefault();
+			}
+		});
 
 $('input#userName').keypress(function(e) {
 	if (e.keyCode == 13) {
@@ -79,28 +76,12 @@ $('input#userName').keypress(function(e) {
 	}
 });
 
-//$('input#userName').change(setUsername());
-
-// $('#chooseAvatarAnchor').onclick(openAvatarSelector);
-// $('#chooseAvatarAnchor').popover({ html : true});
-
-// General View Functions
-/*
- * function sendPublicMessage() { // alert('Send Message '); var msg =
- * $('#publicMessageBox').val(); if (msg != "") { var currentTime = new Date();
- * var chatMessage = { "message" : msg, "sender" : userName, "sentAt" :
- * getTimeDisplay(currentTime), "sendTo":"All" }; // alert('Send Message '
- * +chatMessage); socket.emit('globalChat', chatMessage);
- * $('#chatHistoryAllList').append(getStructuredMessage(chatMessage));
- * $('#publicMessageBox').val('');
- * scrollMessageToEnd($("#publicChatHistoryDiv")); }
- *  }
- */
-
-function sendChatMessage(sendTo, messageBoxID, chatHistoryList,global) {
+function sendChatMessage(sendTo, messageBoxID, chatHistoryList, global,
+		chatTabContentDivId) {
 
 	var msg = $('#' + messageBoxID).val();
-	//('Send Message'+ msg+' to '+sendTo+' '+messageBoxID+' '+chatHistoryList+' '+userName);
+	// ('Send Message'+ msg+' to '+sendTo+' '+messageBoxID+' '+chatHistoryList+'
+	// '+userName);
 	if (msg != "") {
 		var currentTime = new Date();
 		var chatMessage = {
@@ -110,18 +91,18 @@ function sendChatMessage(sendTo, messageBoxID, chatHistoryList,global) {
 			"sendTo" : sendTo
 		};
 		// alert('Send Message ' +chatMessage);
-		if(global){
-		    socket.emit('globalChat', chatMessage);
-		}else {
-		    socket.emit('privateChat', chatMessage);
+		if (global) {
+			socket.emit('globalChat', chatMessage);
+		} else {
+			socket.emit('privateChat', chatMessage);
 		}
 		$('#' + chatHistoryList).append(getStructuredMessage(chatMessage));
 		$('#' + messageBoxID).val('');
-		scrollMessageToEnd('publicChatHistoryDiv');
+		scrollMessageToEnd(chatTabContentDivId);
 	}
 }
 
-function scrollMessageToEnd(chatDivID) {
+function scrollMessageToEnd(chatTabContentDivId) {
 
 	var onlineUsersList = $("#onlineUsersList");
 	onlineUsersList.animate({
@@ -129,20 +110,22 @@ function scrollMessageToEnd(chatDivID) {
 				- onlineUsersList.height()
 	}, 200);
 
-    var chatDivIDObject = $("#"+chatDivID);
-    chatDivIDObject.animate({
-    		scrollTop : chatDivIDObject.prop("scrollHeight")
-    				- chatDivIDObject.height()
-    }, 200);
+	var chatTabContentDivIdObject = $("#" + chatTabContentDivId);
+	// alert(chatDivID+' '+chatTabContentDivIdObject);
+	chatTabContentDivIdObject.animate({
+		scrollTop : chatTabContentDivIdObject.prop("scrollHeight")
+				- chatTabContentDivIdObject.height()
+	}, 200);
 }
 
 function getStructuredMessage(msg) {
-	//alert(msg);
-	//alert(msg.message);
+	// alert(msg);
+	// alert(msg.message);
 	var d = new Date();
 	var messageBuilder = '<li class="media"><div class="media-body"><div class="media"><div class="media-body"><p style="color:black;">';
 	messageBuilder = messageBuilder.concat(msg.message);
-	messageBuilder = messageBuilder.concat('</p><br><small class="text-muted">');
+	messageBuilder = messageBuilder
+			.concat('</p><br><small class="text-muted">');
 	messageBuilder = messageBuilder.concat(msg.sender + " | " + msg.sentAt);
 	messageBuilder = messageBuilder
 			.concat('</small><hr></div></div></div></li>');
@@ -266,20 +249,22 @@ function changeAvatar(avatarName) {
 
 function createPrivateChat(chatWith) {
 	var privateChatterObject = findChatterTab(chatWith);
-	//alert(userName + " wants to chat with " + chatWith+' privateChatterObject '+privateChatterObject);
+	// alert(userName + " wants to chat with " + chatWith+' privateChatterObject
+	// '+privateChatterObject);
 
 	makeOtherChatTabDeactive();
 	if (privateChatterObject == null) {
-		//addPrivateChatter(chatWith);
+		// addPrivateChatter(chatWith);
 		privateChatterObject = addPrivateChatter(chatWith);
 		attachKeyPress(privateChatterObject.sendMessageBtn,
 				privateChatterObject.messageBox, chatWith,
-				privateChatterObject.chatHistoryAllList);
+				privateChatterObject.chatHistoryAllList,
+				privateChatterObject.chatTabContentDivId);
 		myChatterArray.push(privateChatterObject);
 	} else {
 		activateChatterTab(privateChatterObject);
 	}
-    return privateChatterObject;
+	return privateChatterObject;
 }
 
 function addPrivateChatter(chatWith) {
@@ -288,29 +273,23 @@ function addPrivateChatter(chatWith) {
 	var chatHistoryAllList = chatWith + 'chatHistoryAllList';
 	var messageBox = chatWith + 'message-box';
 	var sendMessageBtn = chatWith + 'send-message-btn';
-	var privateChatHistoryDiv = chatWith + 'chatHistoryDiv';
+	var privateChatHomeDiv = chatWith + 'chatHome';
 	var tabAnchorId = chatWith + 'Anchor';
 
-	var privateChatterObject = {
-		"chatTo" : chatWith,
-		"chatTabUlLiId" : chatTabUlLiId,
-		"chatTabContentDivId" : chatTabContentDivId,
-		"chatHistoryAllList" : chatHistoryAllList,
-		"messageBox" : messageBox,
-		"sendMessageBtn" : sendMessageBtn,
-		"tabAnchor" : tabAnchorId
-	};
+	var privateChatterObject = getChatterObject(chatWith, chatTabUlLiId,
+                               			chatTabContentDivId, chatHistoryAllList,messageBox,
+                               			sendMessageBtn, tabAnchorId, privateChatHomeDiv);
 
 	var chatterTab = '<li class="active" id="' + chatTabUlLiId + '" ><a id="'
 			+ tabAnchorId + '" aria-expanded="true" data-toggle="tab" href="#'
-			+ chatTabContentDivId + '">' + chatWith + '</a></li>';
+			+ privateChatHomeDiv + '">' + chatWith + '</a></li>';
 
 	var chatterContent = '<div id="'
-			+ chatTabContentDivId
+			+ privateChatHomeDiv
 			+ '" class="tab-pane fade in active">'
-			+ '<div class="panel panel-info">'
+			+ '<div class="panel panel-info" >'
 			+ '<div id="'
-			+ privateChatHistoryDiv
+			+ chatTabContentDivId
 			+ '" class="panel-body panel-height">'
 			+ '<ul id="'
 			+ chatHistoryAllList
@@ -351,46 +330,64 @@ function findChatterTab(chatWith) {
 
 function makeOtherChatTabDeactive() {
 	for (var i = 0; i < myChatterArray.length; i++) {
-
 		deactivateChatterTab(myChatterArray[i]);
-
 	}
 }
 
 function activateChatterTab(chatterTab) {
 	$('#' + chatterTab.chatTabUlLiId).removeClass(chatterTabDeactiveClass);
 	$('#' + chatterTab.chatTabUlLiId).addClass(chatterTabActiveClass);
-	$('#' + chatterTab.chatTabContentDivId).removeClass(
-			chatterContentDeactiveClass);
-	$('#' + chatterTab.chatTabContentDivId).addClass(
-			chatterContentActivateClass);
+	$('#' + chatterTab.chatTabContentDivId).removeClass(chatterContentDeactiveClass);
+	$('#' + chatterTab.chatTabContentDivId).addClass(chatterContentActivateClass);
 	$('#' + chatterTab.tabAnchor).attr("aria-expanded", "true");
 }
 
 function deactivateChatterTab(chatterTab) {
 	$('#' + chatterTab.chatTabUlLiId).removeClass(chatterTabActiveClass);
 	$('#' + chatterTab.chatTabUlLiId).addClass(chatterTabDeactiveClass);
-	$('#' + chatterTab.chatTabContentDivId).removeClass(
-			chatterContentActivateClass);
-	$('#' + chatterTab.chatTabContentDivId).addClass(
-			chatterContentDeactiveClass);
+	$('#' + chatterTab.chatTabContentDivId).removeClass(chatterContentActivateClass);
+	$('#' + chatterTab.chatTabContentDivId).addClass(chatterContentDeactiveClass);
 	$('#' + chatterTab.tabAnchor).attr("aria-expanded", "false");
 }
 
-function attachKeyPress(messageSendBtnID, messageBoxID, sendTo, chatHistoryList) {
+function attachKeyPress(messageSendBtnID, messageBoxID, sendTo,
+		chatHistoryList, chatTabContentDivId) {
 
-	$('#' + messageSendBtnID).click(function() {
-		sendChatMessage(sendTo, messageBoxID, chatHistoryList,false);
-		return false;
-	});
+	$('#' + messageSendBtnID).click(
+			function() {
+				sendChatMessage(sendTo, messageBoxID, chatHistoryList, false,
+						chatTabContentDivId);
+				return false;
+			});
 
-	$('#' + messageBoxID).keypress(function(e) {
-		if (e.keyCode == 13) {
-			sendChatMessage(sendTo, messageBoxID, chatHistoryList,false);
-			e.stopPropagation();
-			e.stopped = true;
-			e.preventDefault();
-		}
-	});
+	$('#' + messageBoxID).keypress(
+			function(e) {
+				if (e.keyCode == 13) {
+					sendChatMessage(sendTo, messageBoxID, chatHistoryList,
+							false, chatTabContentDivId);
+					e.stopPropagation();
+					e.stopped = true;
+					e.preventDefault();
+				}
+			});
 
+}
+
+function getChatterObject(chatTo, chatTabUlLiId, chatTabContentDivId,
+		chatHistoryAllList, messageBox, sendMessageBtn, tabAnchor, chatHomeDiv) {
+	var globalChatterObject = {
+		"chatTo" :chatTo,
+		"chatTabUlLiId" : chatTabUlLiId,
+		"chatTabContentDivId" : chatTabContentDivId,
+		"chatHistoryAllList" : chatHistoryAllList,
+		"messageBox" : messageBox,
+		"sendMessageBtn" : sendMessageBtn,
+		"tabAnchor" : tabAnchor,
+		"chatHomeDiv" : chatHomeDiv
+	};
+	return globalChatterObject;
+}
+
+function blinkElement(elementId){
+    $('#elementId').effect("highlight", {}, 3000);
 }

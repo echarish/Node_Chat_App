@@ -9,7 +9,12 @@ socket.on('globalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
     $('#chatHistoryAllList').append(getStructuredMessage(msg));
     playSound("bing");
+    makeOtherChatTabDeactive();
+    activateChatterTab(findChatterTab("global"));
+
     scrollMessageToEnd('publicChatHistoryDiv');
+
+
     $.titleAlert(msg.message, {
         requireBlur : true,
         stopOnFocus : true,
@@ -28,6 +33,7 @@ socket.on('privateChat', function(msg) {
 
     $('#'+privateChatterObject.chatHistoryAllList).append(getStructuredMessage(msg));
     playSound("bing");
+    //alert(privateChatterObject.chatTabContentDivId);
     scrollMessageToEnd(privateChatterObject.chatTabContentDivId);
 
     $.titleAlert(msg.message, {
