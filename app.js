@@ -59,29 +59,18 @@ io.on('connection', function(socket) {
     avatarList=getFiles('public/images/avatar');
 
     socket.emit('avatarList',JSON.stringify(avatarList));
-
+/*
 	Object.keys(clients).forEach(function(clientId) {
 		console.log('Clients are ' + clientId);
 	})
 
 	Object.keys(socketsOfClients).forEach(function(sId) {
 		console.log('Socket Ids ' + sId);
-	})
+	})*/
 
-	mongo.connect(mongoDBPath, function(err, db) {
-		if (err) {
-			console.warn(err.message);
-		} else {
-			var collection = db.collection('Global_Chat')
-			var stream = collection.find().sort().limit(10).stream();
-			stream.on('data', function(chat) {
-				console.log('emitting savedGlobalChat chat');
-				socket.emit('savedGlobalChat', chat);
-			});
-		}
-	});
 
 	socket.on('set username', function(userDetails) {
+	    console.log('Set Username called');
         var userName=userDetails.userName;
 
 		if (clients[userName] === undefined) {
@@ -92,6 +81,18 @@ io.on('connection', function(socket) {
 			userNameAvailable(socket.id, userName);
 			clientsLogDetails[userName] = userDetails;
 			userJoined(userDetails);
+            mongo.connect(mongoDBPath, function(err, db) {
+                        if (err) {
+                            console.warn(err.message);
+                        } else {
+                            var collection = db.collection('Global_Chat');
+                            var stream = collection.find().sort().limit(10).stream();
+                            stream.on('data', function(chat) {
+                                console.log('emitting savedGlobalChat chat');
+                                socket.emit('savedGlobalChat', chat);
+                            });
+                        }
+                });
 		} else if (clients[userName] === socket.id) {
 			// Ignore for now
 		} else {
@@ -118,11 +119,7 @@ io.on('connection', function(socket) {
 				var sender = msg.sender;
 				var sentAt = msg.sentAt;
 				var collection = db.collection('Global_Chat');
-				collection.insert({
-					"message" : message,
-					"sender" : sender,
-					"sentAt" : sentAt
-				}, function(err, o) {
+				collection.insert(msg, function(err, o) {
 					if (err) {
 						console.warn(err.message);
 					} else {
@@ -135,6 +132,29 @@ io.on('connection', function(socket) {
 
 		socket.broadcast.emit('globalChat', msg);
 	});
+
+
+	socket.on('privateChat', function(msg) {
+
+    		console.log('message - '+msg.message+',  sender - '+msg.sender+',  sentAt - '+msg.sentAt+',  sendTo - '+msg.sendTo);
+    		var socketOfReciver;
+    		Object.keys(clients).forEach(function(clientId) {
+            		console.log('Clients are ' + clientId+' , '+clients[clientId]);
+            		if(clientId==msg.sendTo){
+            		    socketOfReciver=clients[clientId];
+            		}
+            	})
+
+            Object.keys(socketsOfClients).forEach(function(sId) {
+                console.log('Socket Ids ' + sId);
+            })
+
+            console.log('reciver socket is '+socketOfReciver);
+            if(socketOfReciver!=null){
+                console.log('Emmitting private chat to ');
+    		    io.sockets.sockets[socketOfReciver].emit('privateChat', msg);
+    		}
+    	});
 
 
 	socket.on('avatarChange', function(msg) {
@@ -170,7 +190,7 @@ function userNameAvailable(sId, uName) {
 
 function userNameAlreadyInUse(sId, uName) {
 	setTimeout(function() {
-		io.sockets.sockets[sId].emit('error', {
+		io.sockets.sockets[sId].emit('userNameExists', {
 			"userNameInUse" : true
 		});
 	}, 500);
@@ -196,4 +216,5 @@ function getFiles (dir, files_){
 
 	return files_;
 }
+
 

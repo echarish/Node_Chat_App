@@ -7,18 +7,26 @@ var myChatterArray = [];
 // onLoadFunctions
 
 $(function() {
-	// alert('ready function');
+	//alert('ready function '+userName);
 	// $('#chooseUserNameContainer').hide();
-	$('#chatDisplayRowContainer').hide();
+	if(userName==undefined || userName==''){
+	    //alert('inside if');
+	    $('#chatDisplayRowContainer').hide();
+        $('#chooseUserNameContainer').show();
+	}else{
+	    //alert('inside else');
+	    $('#chatDisplayRowContainer').show();
+        $('#chooseUserNameContainer').hide();
+	}
 
 	$('#chooseAvatarAnchor').popover({
 		title : 'Cool Avatars',
 		placement : 'bottom',
-		trigger : 'click,focus,hover',
+		trigger : 'click,hover,focus',
 		animation : true,
 		html : true,
 		content : function() {
-
+            //alert($('#popover_content_wrapper').html());
 			return $('#popover_content_wrapper').html();
 		}
 	});
@@ -26,11 +34,11 @@ $(function() {
 	$('#changeAvatarAnchor').popover({
 		title : 'Cool Avatars',
 		placement : 'bottom',
-		trigger : 'click,focus,hover',
+		trigger : 'click,hover,focus',
 		animation : true,
 		html : true,
 		content : function() {
-
+            //alert($('#popover_content_wrapper').html());
 			return $('#popover_content_wrapper').html();
 		}
 	});
@@ -49,13 +57,13 @@ $(function() {
 
 // UI Functions
 $('#publicMessageSendBtn').click(function() {
-	sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList');
+	sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',true);
 	return false;
 });
 
 $('#publicMessageBox').keypress(function(e) {
 	if (e.keyCode == 13) {
-		sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList');
+		sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',true);
 		e.stopPropagation();
 		e.stopped = true;
 		e.preventDefault();
@@ -71,7 +79,7 @@ $('input#userName').keypress(function(e) {
 	}
 });
 
-$('input#userName').change(setUsername());
+//$('input#userName').change(setUsername());
 
 // $('#chooseAvatarAnchor').onclick(openAvatarSelector);
 // $('#chooseAvatarAnchor').popover({ html : true});
@@ -89,9 +97,10 @@ $('input#userName').change(setUsername());
  *  }
  */
 
-function sendChatMessage(sendTo, messageBoxID, chatHistoryList) {
-	// alert('Send Message '+sendTo+' '+messageBoxID+' '+chatHistoryList);
+function sendChatMessage(sendTo, messageBoxID, chatHistoryList,global) {
+
 	var msg = $('#' + messageBoxID).val();
+	//('Send Message'+ msg+' to '+sendTo+' '+messageBoxID+' '+chatHistoryList+' '+userName);
 	if (msg != "") {
 		var currentTime = new Date();
 		var chatMessage = {
@@ -101,34 +110,39 @@ function sendChatMessage(sendTo, messageBoxID, chatHistoryList) {
 			"sendTo" : sendTo
 		};
 		// alert('Send Message ' +chatMessage);
-		socket.emit(sendTo + 'Chat', chatMessage);
+		if(global){
+		    socket.emit('globalChat', chatMessage);
+		}else {
+		    socket.emit('privateChat', chatMessage);
+		}
 		$('#' + chatHistoryList).append(getStructuredMessage(chatMessage));
 		$('#' + messageBoxID).val('');
-		scrollMessageToEnd($('#' + chatHistoryList));
+		scrollMessageToEnd('publicChatHistoryDiv');
 	}
 }
 
-function scrollMessageToEnd(chatHistoryListID) {
-	// alert(chatHistoryListID);
+function scrollMessageToEnd(chatDivID) {
+
 	var onlineUsersList = $("#onlineUsersList");
 	onlineUsersList.animate({
 		scrollTop : onlineUsersList.prop("scrollHeight")
 				- onlineUsersList.height()
 	}, 200);
 
-	chatHistoryListID.animate({
-		scrollTop : chatHistoryListID.prop("scrollHeight")
-				- chatHistoryListID.height()
-	}, 200);
+    var chatDivIDObject = $("#"+chatDivID);
+    chatDivIDObject.animate({
+    		scrollTop : chatDivIDObject.prop("scrollHeight")
+    				- chatDivIDObject.height()
+    }, 200);
 }
 
 function getStructuredMessage(msg) {
-	// alert(msg);
-	// alert(msg.message);
+	//alert(msg);
+	//alert(msg.message);
 	var d = new Date();
-	var messageBuilder = '<li class="media"><div class="media-body"><div class="media"><div class="media-body">';
+	var messageBuilder = '<li class="media"><div class="media-body"><div class="media"><div class="media-body"><p style="color:black;">';
 	messageBuilder = messageBuilder.concat(msg.message);
-	messageBuilder = messageBuilder.concat('<br><small class="text-muted">');
+	messageBuilder = messageBuilder.concat('</p><br><small class="text-muted">');
 	messageBuilder = messageBuilder.concat(msg.sender + " | " + msg.sentAt);
 	messageBuilder = messageBuilder
 			.concat('</small><hr></div></div></div></li>');
@@ -240,7 +254,7 @@ function changeAvatar(avatarName) {
 	// alert(avatarLocation);
 	$("#myAvatarAtNameChooser").attr("src", avatarLocation);
 	$("#myAvatarImage").attr("src", avatarLocation);
-	if (userName != 'undefined' && userName != "") {
+	if (userName != undefined && userName != "") {
 		$("#" + userName + "avatarImage").attr("src", avatarLocation);
 		socket.emit('avatarChange', {
 			"userName" : userName,
@@ -251,12 +265,12 @@ function changeAvatar(avatarName) {
 }
 
 function createPrivateChat(chatWith) {
-	// var chatWith=chatWith.value();
-	// alert(userName + " wants to chat with " + chatWith);
 	var privateChatterObject = findChatterTab(chatWith);
+	//alert(userName + " wants to chat with " + chatWith+' privateChatterObject '+privateChatterObject);
+
 	makeOtherChatTabDeactive();
 	if (privateChatterObject == null) {
-		addPrivateChatter(chatWith);
+		//addPrivateChatter(chatWith);
 		privateChatterObject = addPrivateChatter(chatWith);
 		attachKeyPress(privateChatterObject.sendMessageBtn,
 				privateChatterObject.messageBox, chatWith,
@@ -265,7 +279,7 @@ function createPrivateChat(chatWith) {
 	} else {
 		activateChatterTab(privateChatterObject);
 	}
-
+    return privateChatterObject;
 }
 
 function addPrivateChatter(chatWith) {
@@ -337,13 +351,7 @@ function findChatterTab(chatWith) {
 
 function makeOtherChatTabDeactive() {
 	for (var i = 0; i < myChatterArray.length; i++) {
-		/*
-		 * alert(myChatterArray[i] + ' ' + myChatterArray[i].chatTabUlLiId + ' ' +
-		 * myChatterArray[i].chatTabContentDivId + ' ' +
-		 * myChatterArray[i].chatHistoryAllList + ' ' +
-		 * myChatterArray[i].messageBox + ' ' + myChatterArray[i].sendMessageBtn + ' ' +
-		 * myChatterArray[i].tabAnchor + ' ');
-		 */
+
 		deactivateChatterTab(myChatterArray[i]);
 
 	}
@@ -372,13 +380,13 @@ function deactivateChatterTab(chatterTab) {
 function attachKeyPress(messageSendBtnID, messageBoxID, sendTo, chatHistoryList) {
 
 	$('#' + messageSendBtnID).click(function() {
-		sendChatMessage(sendTo, messageBoxID, chatHistoryList);
+		sendChatMessage(sendTo, messageBoxID, chatHistoryList,false);
 		return false;
 	});
 
 	$('#' + messageBoxID).keypress(function(e) {
 		if (e.keyCode == 13) {
-			sendChatMessage(sendTo, messageBoxID, chatHistoryList);
+			sendChatMessage(sendTo, messageBoxID, chatHistoryList,false);
 			e.stopPropagation();
 			e.stopped = true;
 			e.preventDefault();

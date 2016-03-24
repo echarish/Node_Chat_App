@@ -9,7 +9,27 @@ socket.on('globalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
     $('#chatHistoryAllList').append(getStructuredMessage(msg));
     playSound("bing");
-    scrollMessageToEnd($('#chatHistoryAllList'));
+    scrollMessageToEnd('publicChatHistoryDiv');
+    $.titleAlert(msg.message, {
+        requireBlur : true,
+        stopOnFocus : true,
+        duration : 10000,
+        interval : 500
+    });
+
+});
+
+
+socket.on('privateChat', function(msg) {
+    //alert('Private Chat Socket '+msg);
+    //alert('message - '+msg.message+',  sender - '+msg.sender+',  sentAt - '+msg.sentAt+',  sendTo - '+msg.sendTo);
+   var privateChatterObject= createPrivateChat(msg.sender)
+
+
+    $('#'+privateChatterObject.chatHistoryAllList).append(getStructuredMessage(msg));
+    playSound("bing");
+    scrollMessageToEnd(privateChatterObject.chatTabContentDivId);
+
     $.titleAlert(msg.message, {
         requireBlur : true,
         stopOnFocus : true,
@@ -22,7 +42,7 @@ socket.on('globalChat', function(msg) {
 socket.on('savedGlobalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
     $('#chatHistoryAllList').append(getStructuredMessage(msg));
-    scrollMessageToEnd($('#chatHistoryAllList'));
+    scrollMessageToEnd('publicChatHistoryDiv');
 });
 
 socket.on('userJoined', function(userDetails) {
@@ -32,7 +52,7 @@ socket.on('userJoined', function(userDetails) {
 
 socket
     .on(
-        'error',
+        'userNameExists',
         function(msg) {
             if (msg.userNameInUse) {
                 setFeedback("<span style='color: red'> Username already in use. Try another name.</span>");
