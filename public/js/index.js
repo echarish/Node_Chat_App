@@ -1,6 +1,6 @@
 ﻿var userName;
 var loginTime;
-var myAvatarName = "mustacheMan.png";
+var myAvatarName = "defaultAvatar.png";
 var avatarListArray = [];
 var myChatterArray = [];
 
@@ -42,25 +42,26 @@ $(function() {
 			return $('#popover_content_wrapper').html();
 		}
 	});
-
-	myChatterArray.push(getChatterObject("global", "globalChatUlLi",
-			"publicChatHome", "chatHistoryAllList", "publicMessageBox",
-			"publicMessageSendBtn", "globalAnchor", "publicChatHistoryDiv"));
+    var publicChatTab=getChatterObject("global", "publicChatTabUlLiID",
+                      			"publicChatContentDivID", "publicChatHistoryListID", "publicMessageBoxID",
+                      			"publicMessageSendBtnID", "publicAnchor", "publicChatHome");
+    attachEventsToChatTab(publicChatTab, "global");
+	myChatterArray.push(publicChatTab);
 });
 
 // UI Functions
-$('#publicMessageSendBtn').click(
+$('#publicMessageSendBtnID').click(
 		function() {
-			sendChatMessage('global', 'publicMessageBox', 'chatHistoryAllList',
-					true, 'publicChatHistoryDiv');
+			sendChatMessage('global', 'publicMessageBoxID', 'publicChatHistoryListID',
+					true, 'publicChatContentDivID');
 			return false;
 		});
 
-$('#publicMessageBox').keypress(
+$('#publicMessageBoxID').keypress(
 		function(e) {
 			if (e.keyCode == 13) {
-				sendChatMessage('global', 'publicMessageBox',
-						'chatHistoryAllList', true, 'publicChatHistoryDiv');
+				sendChatMessage('global', 'publicMessageBoxID', 'publicChatHistoryListID',
+                					true, 'publicChatContentDivID');
 				e.stopPropagation();
 				e.stopped = true;
 				e.preventDefault();
@@ -111,7 +112,7 @@ function scrollMessageToEnd(chatTabContentDivId) {
 	}, 200);
 
 	var chatTabContentDivIdObject = $("#" + chatTabContentDivId);
-	// alert(chatDivID+' '+chatTabContentDivIdObject);
+	//alert(chatTabContentDivId+' '+chatTabContentDivIdObject);
 	chatTabContentDivIdObject.animate({
 		scrollTop : chatTabContentDivIdObject.prop("scrollHeight")
 				- chatTabContentDivIdObject.height()
@@ -173,9 +174,9 @@ function setUsername() {
 	}
 
 	socket.emit('set username', sendUserNameData, function(data) {
-		console.log('emit set username on client side', data);
+		//console.log('emit set username on client side', data);
 	});
-	console.log('Set user name as ' + $('input#userName').val());
+	//console.log('Set user name as ' + $('input#userName').val());
 	$('#chatDisplayRowContainer').show();
 	$('#chooseUserNameContainer').hide();
 	// appendOnlineUserInfo(userName);
@@ -249,17 +250,12 @@ function changeAvatar(avatarName) {
 
 function createPrivateChat(chatWith) {
 	var privateChatterObject = findChatterTab(chatWith);
-	// alert(userName + " wants to chat with " + chatWith+' privateChatterObject
-	// '+privateChatterObject);
 
-	makeOtherChatTabDeactive();
+	makeOtherChatTabDeactive(privateChatterObject);
 	if (privateChatterObject == null) {
-		// addPrivateChatter(chatWith);
+
 		privateChatterObject = addPrivateChatter(chatWith);
-		attachKeyPress(privateChatterObject.sendMessageBtn,
-				privateChatterObject.messageBox, chatWith,
-				privateChatterObject.chatHistoryAllList,
-				privateChatterObject.chatTabContentDivId);
+		attachEventsToChatTab(privateChatterObject, chatWith);
 		myChatterArray.push(privateChatterObject);
 	} else {
 		activateChatterTab(privateChatterObject);
@@ -268,19 +264,19 @@ function createPrivateChat(chatWith) {
 }
 
 function addPrivateChatter(chatWith) {
-	var chatTabUlLiId = chatWith + 'chatTabUlLiId';
-	var chatTabContentDivId = chatWith + 'chatTabContentDiv';
-	var chatHistoryAllList = chatWith + 'chatHistoryAllList';
-	var messageBox = chatWith + 'message-box';
-	var sendMessageBtn = chatWith + 'send-message-btn';
-	var privateChatHomeDiv = chatWith + 'chatHome';
+	var chatTabUlLiId = chatWith + 'ChatTabUlLiID';
+	var chatTabContentDivId = chatWith + 'ChatTabContentDivID';
+	var chatHistoryAllList = chatWith + 'ChatHistoryListID';
+	var messageBox = chatWith + 'MessageBoxID';
+	var sendMessageBtn = chatWith + 'SendMessageBtnID';
+	var privateChatHomeDiv = chatWith + 'ChatHome';
 	var tabAnchorId = chatWith + 'Anchor';
 
 	var privateChatterObject = getChatterObject(chatWith, chatTabUlLiId,
                                			chatTabContentDivId, chatHistoryAllList,messageBox,
                                			sendMessageBtn, tabAnchorId, privateChatHomeDiv);
 
-	var chatterTab = '<li class="active" id="' + chatTabUlLiId + '" ><a id="'
+	var chatterTab = '<li tabindex="'+myChatterArray.length+'" class="active" id="' + chatTabUlLiId + '" ><a id="'
 			+ tabAnchorId + '" aria-expanded="true" data-toggle="tab" href="#'
 			+ privateChatHomeDiv + '">' + chatWith + '</a></li>';
 
@@ -288,7 +284,7 @@ function addPrivateChatter(chatWith) {
 			+ privateChatHomeDiv
 			+ '" class="tab-pane fade in active">'
 			+ '<div class="panel panel-info" >'
-			+ '<div id="'
+			+ '<div  id="'
 			+ chatTabContentDivId
 			+ '" class="panel-body panel-height">'
 			+ '<ul id="'
@@ -311,13 +307,6 @@ function addPrivateChatter(chatWith) {
 
 	return privateChatterObject;
 }
-
-var chatterContentDeactiveClass = 'tab-pane fade';
-var chatterContentActivateClass = 'tab-pane fade active in';
-var chatterTabActiveClass = 'active';
-var chatterTabDeactiveClass = '';
-var chatterTabActiveProperty = 'aria-expanded';
-
 function findChatterTab(chatWith) {
 	for (var i = 0; i < myChatterArray.length; i++) {
 		if (myChatterArray[i].chatTo == chatWith) {
@@ -328,66 +317,113 @@ function findChatterTab(chatWith) {
 	return null;
 }
 
-function makeOtherChatTabDeactive() {
+function makeOtherChatTabDeactive(exludedTab) {
 	for (var i = 0; i < myChatterArray.length; i++) {
-		deactivateChatterTab(myChatterArray[i]);
+
+	    if(exludedTab!=myChatterArray[i]){
+	       /* alert("deactivating "+myChatterArray[i].chatTo+
+	        ' \n chatHomeDiv - '+myChatterArray[i].chatHomeDiv+
+	        ' \n chatTabContentDivId - '+myChatterArray[i].chatTabContentDivId);*/
+		    deactivateChatterTab(myChatterArray[i]);
+		}
 	}
 }
 
+var chatterContentActivateClass = 'in';
+var activateTabClass = 'active';
+var chatterTabActiveProperty = 'aria-expanded';
+
 function activateChatterTab(chatterTab) {
-	$('#' + chatterTab.chatTabUlLiId).removeClass(chatterTabDeactiveClass);
-	$('#' + chatterTab.chatTabUlLiId).addClass(chatterTabActiveClass);
-	$('#' + chatterTab.chatTabContentDivId).removeClass(chatterContentDeactiveClass);
-	$('#' + chatterTab.chatTabContentDivId).addClass(chatterContentActivateClass);
-	$('#' + chatterTab.tabAnchor).attr("aria-expanded", "true");
+	$('#' + chatterTab.chatTabUlLiID).addClass(activateTabClass);
+	$('#' + chatterTab.chatHomeDiv).addClass(activateTabClass);
+    $('#' + chatterTab.chatHomeDiv).addClass(chatterContentActivateClass);
+	$('#' + chatterTab.tabAnchor).attr(chatterTabActiveProperty, "true");
 }
 
 function deactivateChatterTab(chatterTab) {
-	$('#' + chatterTab.chatTabUlLiId).removeClass(chatterTabActiveClass);
-	$('#' + chatterTab.chatTabUlLiId).addClass(chatterTabDeactiveClass);
-	$('#' + chatterTab.chatTabContentDivId).removeClass(chatterContentActivateClass);
-	$('#' + chatterTab.chatTabContentDivId).addClass(chatterContentDeactiveClass);
-	$('#' + chatterTab.tabAnchor).attr("aria-expanded", "false");
+	$('#' + chatterTab.chatTabUlLiID).removeClass(activateTabClass);
+    $('#' + chatterTab.chatHomeDiv).removeClass(activateTabClass);
+    $('#' + chatterTab.chatHomeDiv).removeClass(chatterContentActivateClass);
+	$('#' + chatterTab.tabAnchor).attr(chatterTabActiveProperty, "false");
 }
 
-function attachKeyPress(messageSendBtnID, messageBoxID, sendTo,
-		chatHistoryList, chatTabContentDivId) {
+function attachEventsToChatTab(chatterTab, sendTo) {
 
-	$('#' + messageSendBtnID).click(
+	$('#' + chatterTab.sendMessageBtnID).click(
 			function() {
-				sendChatMessage(sendTo, messageBoxID, chatHistoryList, false,
-						chatTabContentDivId);
+				sendChatMessage(sendTo, chatterTab.messageBoxID, chatterTab.chatHistoryListID, false,
+						chatterTab.chatContentDivID);
 				return false;
 			});
 
-	$('#' + messageBoxID).keypress(
+	$('#' + chatterTab.messageBoxID).keypress(
 			function(e) {
 				if (e.keyCode == 13) {
-					sendChatMessage(sendTo, messageBoxID, chatHistoryList,
-							false, chatTabContentDivId);
+					sendChatMessage(sendTo, chatterTab.messageBoxID, chatterTab.chatHistoryListID, false,
+                    						chatterTab.chatContentDivID);
 					e.stopPropagation();
 					e.stopped = true;
 					e.preventDefault();
 				}
 			});
 
+	$( "#"+chatterTab.chatTabUlLiID ).click(function() {
+	       makeOtherChatTabDeactive(chatterTab);
+           activateChatterTab(chatterTab);
+	       scrollMessageToEnd(chatterTab.chatContentDivID);
+    });
+
 }
 
 function getChatterObject(chatTo, chatTabUlLiId, chatTabContentDivId,
 		chatHistoryAllList, messageBox, sendMessageBtn, tabAnchor, chatHomeDiv) {
+	/*alert(chatTo+'\n'+chatTabUlLiId+'\n'+chatTabContentDivId+'\n'+chatHistoryAllList+'\n'+messageBox+'\n'+
+                                         			sendMessageBtn+'\n'+tabAnchor+'\n'+ chatHomeDiv);*/
 	var globalChatterObject = {
 		"chatTo" :chatTo,
-		"chatTabUlLiId" : chatTabUlLiId,
-		"chatTabContentDivId" : chatTabContentDivId,
-		"chatHistoryAllList" : chatHistoryAllList,
-		"messageBox" : messageBox,
-		"sendMessageBtn" : sendMessageBtn,
+		"chatTabUlLiID" : chatTabUlLiId,
+		"chatContentDivID" : chatTabContentDivId,
+		"chatHistoryListID" : chatHistoryAllList,
+		"messageBoxID" : messageBox,
+		"sendMessageBtnID" : sendMessageBtn,
 		"tabAnchor" : tabAnchor,
 		"chatHomeDiv" : chatHomeDiv
 	};
 	return globalChatterObject;
 }
 
-function blinkElement(elementId){
-    $('#elementId').effect("highlight", {}, 3000);
+function blinkElement(chatterTab){
+
+    var toggle=true;
+    for(i=0;i<5;i++) {
+         $('#'+chatterTab.chatTabUlLiID).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+         //$('#'+chatterTab.chatContentDivID).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+        /* alert(toggle);
+         if(toggle){
+           $('#' + chatterTab.chatTabUlLiID).addClass(activateTabClass);
+         }else{
+           $('#' + chatterTab.chatTabUlLiID).removeClass(activateTabClass);
+         }
+
+         toggle=!toggle;*/
+     }
+      //$('#' + chatterTab.chatTabUlLiID).removeClass(activateTabClass);
+}
+
+function doChaterTabAction(chatterTab,msg){
+    $('#'+chatterTab.chatHistoryListID).append(getStructuredMessage(msg));
+    //makeOtherChatTabDeactive(chatterTab);
+   // activateChatterTab(chatterTab);
+   // scrollMessageToEnd(chatterTab.chatContentDivID);
+    blinkElement(chatterTab);
+}
+
+function alertMessage(msg){
+     playSound("bing");
+     $.titleAlert(msg, {
+            requireBlur : true,
+            stopOnFocus : true,
+            duration : 10000,
+            interval : 500
+        });
 }

@@ -1,15 +1,15 @@
 .col-md-6
           ul#chatTabUL.nav.nav-tabs
-            li#globalChatUlLi.active
-              a#globalAnchor(data-toggle='tab',aria-expanded="true", href='#publicChatHome') Public
+            li#publicChatTabUlLiID.active(tabindex="-1")
+              a#publicAnchor(data-toggle='tab',aria-expanded="true", href='#publicChatHome') Public
 
           #chatTabContentDiv.tab-content.nav-justified
             #publicChatHome.tab-pane.fade.in.active
               .panel.panel-info
-                #publicChatHistoryDiv.panel-body.panel-height
-                  ul#chatHistoryAllList.media-list
+                #publicChatContentDivID.panel-body.panel-height
+                  ul#publicChatHistoryListID.media-list
                 .panel-footer
                   .input-group
-                    input#publicMessageBox.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
+                    input#publicMessageBoxID.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
                     span.input-group-btn
-                      button#publicMessageSendBtn.btn.btn-info(type='button') Send Message
+                      button#publicMessageSendBtnID.btn.btn-info(type='button') Send Message

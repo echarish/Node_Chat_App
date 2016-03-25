@@ -10,7 +10,7 @@ var path = require('path');
 var fs = require('fs');
 
 var mongo = require('mongodb').MongoClient;
-var mongoDBPath = 'mongodb://127.0.0.1:27017/test';
+var mongoDBPath = 'mongodb://127.0.0.1:27017/AXA_COMMUNICATE';
 
 var app = express();
 
@@ -33,7 +33,7 @@ if ('development' == app.get('env')) {
 }
 
 console.log('Routes '+routes);
-app.get('/', routes.index);
+app.get('/axacom', routes.index);
 
 console.log('user '+user);
 app.get('/users', user.list);
@@ -54,20 +54,13 @@ var clientsLogDetails = {};
 var avatarList={};
 // var clientsCount=0;
 
-io.on('connection', function(socket) {
+var axacom = io.of('/axacom');
+
+axacom.on('connection', function(socket) {
 	console.log('a user connected');
     avatarList=getFiles('public/images/avatar');
 
     socket.emit('avatarList',JSON.stringify(avatarList));
-/*
-	Object.keys(clients).forEach(function(clientId) {
-		console.log('Clients are ' + clientId);
-	})
-
-	Object.keys(socketsOfClients).forEach(function(sId) {
-		console.log('Socket Ids ' + sId);
-	})*/
-
 
 	socket.on('set username', function(userDetails) {
 	    console.log('Set Username called');
@@ -86,7 +79,7 @@ io.on('connection', function(socket) {
                             console.warn(err.message);
                         } else {
                             var collection = db.collection('Global_Chat');
-                            var stream = collection.find().sort().limit(10).stream();
+                            var stream = collection.find().sort({"sentAt":-1}).limit(10).stream();
                             stream.on('data', function(chat) {
                                 console.log('emitting savedGlobalChat chat');
                                 socket.emit('savedGlobalChat', chat);
@@ -102,7 +95,7 @@ io.on('connection', function(socket) {
 
 	socket.on('disconnect', function() {
 		var uName = socketsOfClients[socket.id];
-		console.log('user disconnected '+uName+" , "+socket.id);
+		console.log('user disconnected disconnect event called'+uName+" , "+socket.id);
 		delete socketsOfClients[socket.id];
 		delete clients[uName];
 		delete clientsLogDetails[uName];
@@ -130,29 +123,16 @@ io.on('connection', function(socket) {
 			}
 		});
 
-		socket.broadcast.emit('globalChat', msg);
+		 socket.broadcast.emit('globalChat', msg);
 	});
 
 
 	socket.on('privateChat', function(msg) {
 
     		console.log('message - '+msg.message+',  sender - '+msg.sender+',  sentAt - '+msg.sentAt+',  sendTo - '+msg.sendTo);
-    		var socketOfReciver;
-    		Object.keys(clients).forEach(function(clientId) {
-            		console.log('Clients are ' + clientId+' , '+clients[clientId]);
-            		if(clientId==msg.sendTo){
-            		    socketOfReciver=clients[clientId];
-            		}
-            	})
-
-            Object.keys(socketsOfClients).forEach(function(sId) {
-                console.log('Socket Ids ' + sId);
-            })
-
-            console.log('reciver socket is '+socketOfReciver);
-            if(socketOfReciver!=null){
-                console.log('Emmitting private chat to ');
-    		    io.sockets.sockets[socketOfReciver].emit('privateChat', msg);
+    		 if(clients[msg.sendTo]!=null){
+                console.log('Emmitting private chat to '+msg.sendTo);
+    		    axacom.sockets[clients[msg.sendTo]].emit('privateChat', msg);
     		}
     	});
 
@@ -167,13 +147,13 @@ io.on('connection', function(socket) {
 
 function userJoined(userDetails) {
 	Object.keys(socketsOfClients).forEach(function(sId) {
-		io.sockets.sockets[sId].emit('userJoined', userDetails);
+		axacom.sockets[sId].emit('userJoined', userDetails);
 	})
 }
 
 function userLeft(uName) {
 	console.log('Userleft called ' + uName);
-	io.sockets.emit('userLeft', {
+	axacom.emit('userLeft', {
 		"userName" : uName
 	});
 }
@@ -181,7 +161,7 @@ function userLeft(uName) {
 function userNameAvailable(sId, uName) {
 	setTimeout(function() {
 		console.log('Sending welcome msg to ' + uName + ' at ' + sId);
-		io.sockets.sockets[sId].emit('welcome', {
+		axacom.sockets[sId].emit('welcome', {
 			"userName" : uName,
 			"currentUsers" : JSON.stringify(clientsLogDetails)
 		});
@@ -190,7 +170,7 @@ function userNameAvailable(sId, uName) {
 
 function userNameAlreadyInUse(sId, uName) {
 	setTimeout(function() {
-		io.sockets.sockets[sId].emit('userNameExists', {
+		axacom.sockets[sId].emit('userNameExists', {
 			"userNameInUse" : true
 		});
 	}, 500);

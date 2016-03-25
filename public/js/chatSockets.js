@@ -1,54 +1,29 @@
 /**
  * Created by harishkumar on 3/18/16.
  */
-var socket = io();
+var socket = io('/axacom');
 
 
 // All Socket methods
 socket.on('globalChat', function(msg) {
-    // alert('Global Chat Socket '+msg);
-    $('#chatHistoryAllList').append(getStructuredMessage(msg));
-    playSound("bing");
-    makeOtherChatTabDeactive();
-    activateChatterTab(findChatterTab("global"));
-
-    scrollMessageToEnd('publicChatHistoryDiv');
-
-
-    $.titleAlert(msg.message, {
-        requireBlur : true,
-        stopOnFocus : true,
-        duration : 10000,
-        interval : 500
-    });
-
+    doChaterTabAction(findChatterTab("global"),msg);
+    alertMessage(msg.message);
 });
 
 
 socket.on('privateChat', function(msg) {
-    //alert('Private Chat Socket '+msg);
-    //alert('message - '+msg.message+',  sender - '+msg.sender+',  sentAt - '+msg.sentAt+',  sendTo - '+msg.sendTo);
-   var privateChatterObject= createPrivateChat(msg.sender)
-
-
-    $('#'+privateChatterObject.chatHistoryAllList).append(getStructuredMessage(msg));
-    playSound("bing");
-    //alert(privateChatterObject.chatTabContentDivId);
-    scrollMessageToEnd(privateChatterObject.chatTabContentDivId);
-
-    $.titleAlert(msg.message, {
-        requireBlur : true,
-        stopOnFocus : true,
-        duration : 10000,
-        interval : 500
-    });
-
+   var privateChatterObject= findChatterTab(msg.sender);
+   if(privateChatterObject==null){
+    privateChatterObject=createPrivateChat(msg.sender);
+   }
+   doChaterTabAction(privateChatterObject,msg);
+   alertMessage(msg.message);
 });
 
 socket.on('savedGlobalChat', function(msg) {
     // alert('Global Chat Socket '+msg);
-    $('#chatHistoryAllList').append(getStructuredMessage(msg));
-    scrollMessageToEnd('publicChatHistoryDiv');
+    $('#publicChatHistoryListID').append(getStructuredMessage(msg));
+    scrollMessageToEnd('publicChatContentDivID');
 });
 
 socket.on('userJoined', function(userDetails) {
