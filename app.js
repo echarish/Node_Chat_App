@@ -9,6 +9,7 @@ var login = require('./routes/login');
 var http = require('http');
 var path = require('path');
 var fs = require('fs');
+var jade = require('jade');
 
 var mongo = require('mongodb').MongoClient;
 var mongoDBPath = 'mongodb://127.0.0.1:27017/AXA_COMMUNICATE';
@@ -39,7 +40,21 @@ app.get('/axacom', routes.index);
 console.log('user '+user);
 app.get('/users', user.list);
 
-app.get('/login', login.login);
+app.get('/signup', function(req, res) {
+    var fn = jade.compileFile('views/signup.jade',{});
+    var html = fn({});
+    res.send(html);
+  });
+
+app.post('/signmeup', function(request, response) {
+     console.log(request.body.username);
+     console.log(request.body.password);
+       if (signUpSuccessful(request, response)) {
+           response.statusCode = 302;
+           response.setHeader("Location", "/axacom?userName="+request.body.username);
+           response.end();
+       }
+  });
 
 
 var serve = http.createServer(app);
@@ -48,6 +63,13 @@ var io = require('socket.io')(serve);
 serve.listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 });
+
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
 
 var clients = {};
 
@@ -201,3 +223,7 @@ function getFiles (dir, files_){
 }
 
 
+function signUpSuccessful(request, response){
+
+    return true;
+}

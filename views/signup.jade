@@ -1,0 +1,22 @@
+
+#login-overlay.modal-dialog
+  .modal-content
+    .modal-header
+
+      h4#myModalLabel.modal-title Sign-up to AXA Communicate
+    .modal-body
+      .row
+        .col-xs-10.center-block
+          .well
+            form#loginForm(method='POST', action='/signmeup', novalidate='novalidate')
+              .form-group
+                label.control-label(for='username') Username
+                input#username.form-control(type='text', name='username', value='', required='', title='Please enter you username', placeholder='Harish Kumar')
+                span.help-block
+              .form-group
+                label.control-label(for='password') Password
+                input#password.form-control(type='password', name='password', value='', required='', title='Please enter your password')
+                span.help-block
+              #loginErrorMsg.alert.alert-error.hide Wrong username og password
+
+              button.btn.btn-success.btn-block(type='submit') Sign Me Up
