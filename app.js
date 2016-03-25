@@ -5,6 +5,7 @@
 var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
+var login = require('./routes/login');
 var http = require('http');
 var path = require('path');
 var fs = require('fs');
@@ -37,6 +38,8 @@ app.get('/axacom', routes.index);
 
 console.log('user '+user);
 app.get('/users', user.list);
+
+app.get('/login', login.login);
 
 
 var serve = http.createServer(app);
