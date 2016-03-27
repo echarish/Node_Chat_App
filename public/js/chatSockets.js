@@ -55,7 +55,7 @@ socket.on('welcome', function(userDetails) {
             appendOnlineUserInfo(userArray[i].userName, userArray[i].loginTime,userArray[i].userAvatarId);
         }
     }
-    setCurrentUserInfo("<span style='color: green'> Welcome " + userName
+    setCurrentUserInfo("<span style='color: #9d9d9d'> " + userName
         + "</span>");
 });
 

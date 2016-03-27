@@ -4,5 +4,5 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'AXA Communicate' });
+  res.render('login', { title: 'AXA Communicate' });
 };

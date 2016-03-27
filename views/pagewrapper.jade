@@ -1,0 +1,17 @@
+#page-wrapper
+    .container-fluid
+        .col-md-12
+            ul#chatTabUL.nav.nav-tabs
+                li#publicChatTabUlLiID.active(tabindex="-1")
+                    a#publicAnchor(data-toggle='tab',aria-expanded="true", href='#publicChatHome') Public
+
+            #chatTabContentDiv.tab-content.nav-justified
+                #publicChatHome.tab-pane.fade.in.active
+                    .panel.panel-info
+                        #publicChatContentDivID.panel-body.panel-height
+                            ul#publicChatHistoryListID.media-list
+                        .panel-footer
+                            .input-group
+                                input#publicMessageBoxID.form-control.input-lg(type='text', placeholder='Write a message here...', rows='3')
+                                span.input-group-btn
+                                    button#publicMessageSendBtnID.btn.btn-info(type='button') Send Message

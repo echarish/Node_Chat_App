@@ -4,5 +4,5 @@
  */
 
 exports.login = function(req, res){
-  res.render('loginPage', { title: 'AXA Communicate' });
+  res.render('login', { title: 'AXA Communicate' });
 };

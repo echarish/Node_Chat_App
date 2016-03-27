@@ -7,10 +7,12 @@ var myChatterArray = [];
 // onLoadFunctions
 
 $(function() {
-	// alert('ready function '+userName);
+	//alert('ready function '+userName);
 	// $('#chooseUserNameContainer').hide();
 	userName=getUrlParameter('userName');
-	if (userName == undefined || userName == '') {
+
+
+	/*if (userName == undefined || userName == '') {
 		// alert('inside if');
 		$('#chatDisplayRowContainer').hide();
 		$('#chooseUserNameContainer').show();
@@ -18,7 +20,7 @@ $(function() {
 		// alert('inside else');
 		$('#chatDisplayRowContainer').show();
 		$('#chooseUserNameContainer').hide();
-	}
+	}*/
 
 	$('#chooseAvatarAnchor').popover({
 		title : 'Cool Avatars',
@@ -48,6 +50,8 @@ $(function() {
                       			"publicMessageSendBtnID", "publicAnchor", "publicChatHome");
     attachEventsToChatTab(publicChatTab, "global");
 	myChatterArray.push(publicChatTab);
+
+	setUsername(userName);
 });
 
 // UI Functions
@@ -69,14 +73,14 @@ $('#publicMessageBoxID').keypress(
 			}
 		});
 
-$('input#userName').keypress(function(e) {
+/*$('input#userName').keypress(function(e) {
 	if (e.keyCode == 13) {
 		setUsername()
 		e.stopPropagation();
 		e.stopped = true;
 		e.preventDefault();
 	}
-});
+});*/
 
 function sendChatMessage(sendTo, messageBoxID, chatHistoryList, global,
 		chatTabContentDivId) {
@@ -164,8 +168,8 @@ function appendOnlineUserInfo(onlineUserName, logTime, userAvatarId) {
 	return onlineUserBuilder;
 }
 
-function setUsername() {
-	userName = $('input#userName').val();
+function setUsername(userName) {
+	//userName = $('input#userName').val();
 	loginTime = new Date();
 
 	var sendUserNameData = {

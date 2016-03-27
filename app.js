@@ -6,6 +6,7 @@ var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
 var login = require('./routes/login');
+var homeLayout = require('./routes/homeLayout');
 var http = require('http');
 var path = require('path');
 var fs = require('fs');
@@ -29,6 +30,8 @@ app.use(app.router);
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/axacom', express.static(__dirname + '/public'));
+
 // development only
 if ('development' == app.get('env')) {
 	app.use(express.errorHandler());
@@ -40,18 +43,20 @@ app.get('/axacom', routes.index);
 console.log('user '+user);
 app.get('/users', user.list);
 
-app.get('/signup', function(req, res) {
+app.get('/signup', function(request, response) {
     var fn = jade.compileFile('views/signup.jade',{});
     var html = fn({});
-    res.send(html);
+	response.send(html);
   });
+
+app.get('/axacom/home', homeLayout.homeLayout);
 
 app.post('/signmeup', function(request, response) {
      console.log(request.body.username);
      console.log(request.body.password);
        if (signUpSuccessful(request, response)) {
            response.statusCode = 302;
-           response.setHeader("Location", "/axacom?userName="+request.body.username);
+           response.setHeader("Location", "/axacom/home?userName="+request.body.username);
            response.end();
        }
   });

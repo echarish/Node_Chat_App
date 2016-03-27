@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    include ./userNameChoose.jade
+    include ./avatarChooser.jade
+    include ./chatWindow.jade
+  block body_end
+    script(type='text/javascript', src='/js/titlealert.js')
+    script(type='text/javascript', src='/js/chatSockets.js')
+    script(type='text/javascript', src='/js/index.js')
+    script(type='text/javascript', src='/js/login.js')
+    script(type='text/javascript' src='/js/imagepicker/image-picker.min.js')
+    script(type='text/javascript' src='/js/facebox.js')
