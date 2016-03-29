@@ -182,8 +182,8 @@ function setUsername(userName) {
 		//console.log('emit set username on client side', data);
 	});
 	//console.log('Set user name as ' + $('input#userName').val());
-	$('#chatDisplayRowContainer').show();
-	$('#chooseUserNameContainer').hide();
+	//$('#chatDisplayRowContainer').show();
+	//$('#chooseUserNameContainer').hide();
 	// appendOnlineUserInfo(userName);
 }
 

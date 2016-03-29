@@ -1,16 +1,12 @@
 .collapse.navbar-collapse.navbar-ex1-collapse
-    ul.nav.navbar-nav.side-nav
-        li.active
-            a(href='#')
-                i.fa.fa-fw.fa-dashboard
-                |  Create Group
-        li
-            a(href='#')
-                i.fa.fa-fw.fa-bar-chart-o
-                |  Compose Email
-        li
-            a(href='#')
-                i.fa.fa-fw.fa-table
-                |  Support
+  ul.nav.navbar-nav.side-nav.side-nav-rtl.box-shadow
+    li
+      a(href='javascript:;', data-toggle='collapse', data-target='#chatTabUL')
+        i.fa.fa-fw.fa-arrows-v
+        |  Active Chats
+      ul#chatTabUL.collapse.in
+        li#publicChatTabUlLiID.active(tabindex='-1')
+          a#publicAnchor(data-toggle='tab', aria-expanded='true', href='#publicChatHome') Public
+
 
    
