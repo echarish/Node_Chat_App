@@ -53,9 +53,6 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="true" assert-keyword="true" jdk-15="true">
-    <output url="file://$PROJECT_DIR$/classes" />
-  </component>
   <component name="masterDetails">
     <states>
       <state key="ProjectJDKs.UI">

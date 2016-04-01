@@ -54,7 +54,7 @@ ul.nav.navbar-right.top-nav
     li.dropdown
         a.dropdown-toggle(href='#', data-toggle='dropdown')
             i.fa.fa-user
-            span#currentUserInfoSpan
+            #{user.username}
             b.caret
         ul.dropdown-menu
             li
@@ -71,7 +71,7 @@ ul.nav.navbar-right.top-nav
                     |  Settings
             li.divider
             li
-                a(href='#')
+                a(href='/signout', class='text-center new-account')
                     i.fa.fa-fw.fa-power-off
                     |  Log Out
     

@@ -5,29 +5,21 @@
                 .panel-heading Welcome to AXA Communicate
                 .panel-footer
                     .input-group
-                        .col-sm-12.row
-                            .col-md-6
+                        .col-md-12.row
+                            .col-md-4
                                 .col-sm-12.thumbnail.text-center
                                     a#chooseAvatarAnchor.popper(data-toggle='popover', href='#')
                                         img#myAvatarAtNameChooser.img-responsive(alt='', src='images/avatar/defaultAvatar.png')
                                         .caption
                                             h10 Chose Avatar
-                            .col-md-6
-                                .row(style='padding-top:10px;')
-                                    label(for='userName') User name: (Hit Enter)
-                                .row
-                                    input#userName(type='text', size='30')
-                                .row(style='padding-top:10px;')
-                                    label(for='password') Password
-                                .row
-                                    input#password(type='text', size='30')
-                                .row(style='padding-top:10px;')
-                                    .col-md-6
-                                        button#signInBtnID.btn.btn-info(type='button') Sign-in
-                                    .col-md-6
-                                        button#signUpBtnID.btn.btn-info(type='button') Signup
-
-                        .col-sm-12.row
-                            .col-sm-4
-                                span#feedback
-
+                            .col-md-8
+                                .col-md-12(style='padding-top:10px;')
+                                    form.form-signin(action='/login', method='POST')
+                                        input.form-control(style='padding-top:10px;', type='text', name='username', placeholder='Email', required='required', autofocus='autofocus')
+                                        input.form-control(style='padding-top:10px;', type='password', name='password', placeholder='Password', required='required')
+                                        button#signInBtnID.btn.btn-primary.btn-block(type='submit') Sign in
+                                        span.clearfix
+                                    a#signUpBtnID.text-center.new-account(href='/signup') Create an account
+                    .col-sm-12.row
+                        .col-sm-4
+                            span#feedback

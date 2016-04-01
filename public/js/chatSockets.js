@@ -1,7 +1,7 @@
 /**
  * Created by harishkumar on 3/18/16.
  */
-var socket = io('/axacom');
+var socket = io('/');
 
 
 // All Socket methods

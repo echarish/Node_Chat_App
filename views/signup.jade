@@ -8,15 +8,22 @@
       .row
         .col-xs-10.center-block
           .well
-            form#loginForm(method='POST', action='/signmeup', novalidate='novalidate')
+            form#loginForm(method='POST', action='/signup', novalidate='novalidate')
               .form-group
                 label.control-label(for='username') Username
-                input#username.form-control(type='text', name='username', value='', required='', title='Please enter you username', placeholder='Harish Kumar')
-                span.help-block
+                input#username.form-control(type='text', name='username', value='', required='', title='Please enter you username', placeholder='Your ID')
               .form-group
                 label.control-label(for='password') Password
                 input#password.form-control(type='password', name='password', value='', required='', title='Please enter your password')
-                span.help-block
+              .form-group
+                label.control-label(for='email') Email
+                input#email.form-control(type='email', name='email', value='', required='', title='Please enter email')
+              .form-group
+                label.control-label(for='firstName') First name
+                input#firstName.form-control(type='text', name='firstName', value='', required='', title='Please enter your first name')
+              .form-group
+                label.control-label(for='lastName') Last name
+                input#lastName.form-control(type='text', name='lastName', value='', required='', title='Please enter your last name')
               #loginErrorMsg.alert.alert-error.hide Wrong username og password
 
               button.btn.btn-success.btn-block(type='submit') Sign Me Up
